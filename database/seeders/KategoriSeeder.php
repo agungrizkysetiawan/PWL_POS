@@ -18,6 +18,7 @@ class KategoriSeeder extends Seeder
             ['kategori_kode' => 'KAT003', 'kategori_nama' => 'Alat Rumah Tangga', 'created_at' => now(), 'updated_at' => now()],
             ['kategori_kode' => 'KAT004', 'kategori_nama' => 'Otomotif', 'created_at' => now(), 'updated_at' => now()],
             ['kategori_kode' => 'KAT005', 'kategori_nama' => 'Olahraga', 'created_at' => now(), 'updated_at' => now()],
+            
         ];
 
         DB::table('m_kategori')->insert($data);

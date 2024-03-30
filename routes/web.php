@@ -32,4 +32,12 @@ Route::put('/user/ubah_simpan/{id}',[UserController::class,'ubah_simpan'])->name
 Route::get('/user/hapus/{id}',[UserController::class,'hapus'])->name('/user/hapus');
 
 
+Route::get('/kategori',[KategoriController::class,'index']);
+Route::get('/kategori/create',[KategoriController::class,'create'])->name('/kategori/create');
+Route::post('/kategori',[KategoriController::class,'store']);
 
+Route::get('/kategori/edit/{id}', [KategoriController::class, 'edit']);
+Route::put('/kategori/edit_simpan/{id}', [KategoriController::class, 'edit_simpan']);
+
+Route::get('/kategori/destroy/{id}', [KategoriController::class,
+'destroy']);
