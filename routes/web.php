@@ -11,7 +11,6 @@ use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Routing\Controller;
 
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,72 +26,49 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/level', [LevelController::class, 'index']);
-Route::get('/kategori', [KategoriController::class, 'index']);
-Route::get('/user', [UserController::class, 'index']);
-Route::get('/user/tambah', [UserController::class, 'tambah'])->name('/user/tambah');
-Route::post('/user/tambah_simpan', [UserController::class, 'tambah_simpan'])->name('/user/tambah_simpan');
-Route::get('/user/ubah/{id}', [UserController::class, 'ubah'])->name('/user/ubah');
-Route::put('/user/ubah_simpan/{id}', [UserController::class, 'ubah_simpan'])->name('/user/ubah_simpan');
-Route::get('/user/hapus/{id}', [UserController::class, 'hapus'])->name('/user/hapus');
-
-
-//------------------------JB 6
-
-//Manage User
-Route::get('/user/create', [UserController::class, 'create'])->name('/user/create');
-Route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('/user/edit');
-Route::get('/user', [UserController::class, 'index'])->name('user.index');
-Route::post('/user', [UserController::class, 'store']);
-Route::put('/user/{id}', [UserController::class, 'edit_simpan'])->name('/user/edit_simpan');
-Route::get('/user/delete/{id}', [UserController::class, 'delete'])->name('/user/delete');
-
-//Manage Level
-Route::get('/level', [LevelController::class, 'index'])->name('level.index');
-Route::get('/level/create', [LevelController::class, 'create'])->name('/level/create');
-Route::post('/level', [LevelController::class, 'store']);
-Route::get('/level/edit/{id}', [LevelController::class, 'edit'])->name('/level/edit');
-Route::put('/level/{id)', [LevelController::class, 'edit_simpan'])->name('/level/edit_simpan');
-Route::get('/level/delete/{id}', [LevelController::class, 'delete'])->name('/level/delete');
-
-Route::get('/kategori/create', [KategoriController::class, 'create'])->name('/kategori/create');
-Route::post('/kategori', [KategoriController::class, 'store']);
-
-//JB 6 PRAK D
-Route::resource('m_user', POSController::class);
-
-//JB 7
-Route::get('/', [WelcomeController::class, 'index']);
-
-//JB 7 PRAK 3
-Route::get('/', [WelcomeController::class, 'index']);
-
-Route::group(['prefix' => 'user'], function () {
-    Route::get('/', [UserController::class, 'index']); // menampilkan halaman awal user
-    Route::post('/list', [UserController::class, 'list']); // menampilkan data user dalam bentuk json untuk datatables
-    Route::get('/create', [UserController::class, 'create']); // menampilkan halaman form tambah user
-    Route::post('/', [UserController::class, 'store']); // menyimpan data user baru
-    Route::get('/{id}', [UserController::class, 'show']); // menampilkan detail user
-    Route::get('/{id}/edit', [UserController::class, 'edit']); // menampilkan halaman form edit user
-    Route::put('/{id}', [UserController::class, 'update']); // menyimpan perubahan data user
-    Route::delete('/{id}', [UserController::class, 'destroy']); // menghapus data user
-
+// User Routes
+Route::prefix('user')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('user.index');
+    Route::get('/create', [UserController::class, 'create'])->name('user.create');
+    Route::post('/', [UserController::class, 'store']);
+    Route::get('/{id}', [UserController::class, 'show']);
+    Route::get('/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('/{id}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::post('/list', [UserController::class, 'list']);
 });
 
+// Level Routes
+Route::prefix('level')->group(function () {
+    Route::get('/', [LevelController::class, 'index'])->name('level.index');
+    Route::get('/create', [LevelController::class, 'create'])->name('level.create');
+    Route::post('/', [LevelController::class, 'store']);
+    Route::get('/{id}/edit', [LevelController::class, 'edit'])->name('level.edit');
+    Route::put('/{id}', [LevelController::class, 'update'])->name('level.update');
+    Route::delete('/{id}', [LevelController::class, 'destroy'])->name('level.destroy');
+});
 
+// Kategori Routes
+Route::prefix('kategori')->group(function () {
+    Route::get('/', [KategoriController::class, 'index']);
+    Route::get('/create', [KategoriController::class, 'create'])->name('kategori.create');
+    Route::post('/', [KategoriController::class, 'store']);
+});
 
+// POS Routes
+Route::resource('m_user', POSController::class);
 
-//------------------------JB 8-----------------------------//
+// Welcome Routes
+Route::get('/', [WelcomeController::class, 'index']);
+
+// Authentication Routes
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('proses_login', [AuthController::class, 'proses_login'])->name('proses_login');
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('proses_register', [AuthController::class, 'proses_register'])->name('proses_register');
 
-// Set up middleware using groups in routing
-// Inside, there are groups to check the login condition
-// If the logged-in user is an admin, they will be directed to AdminController
-// If the logged-in user is a manager, they will be directed to UserController
+// Middleware Groups
 Route::group(['middleware' => ['auth']], function () {
     Route::group(['middleware' => ['cek_login:1']], function () {
         Route::resource('admin', AdminController::class);
@@ -101,4 +77,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['middleware' => ['cek_login:2']], function () {
         Route::resource('manager', ManagerController::class);
     });
+});
+
+// API Routes
+Route::post('/register', [App\Http\Controllers\Api\RegisterController::class, 'register'])->name('api.register');
+Route::post('/login', [App\Http\Controllers\Api\LoginController::class, 'login'])->name('api.login');
+Route::post('/logout', [App\Http\Controllers\Api\LogoutController::class, 'logout'])->name('api.logout');
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
 });
