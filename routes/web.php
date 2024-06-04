@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Http\Request;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\POSController;
@@ -10,15 +10,14 @@ use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Routing\Controller;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| Here is where you can register web routes for your application.
+| These routes are loaded by the RouteServiceProvider and will be assigned to the "web" middleware group.
+| Make something great!
 |
 */
 
@@ -59,7 +58,7 @@ Route::prefix('kategori')->group(function () {
 Route::resource('m_user', POSController::class);
 
 // Welcome Routes
-Route::get('/', [WelcomeController::class, 'index']);
+Route::get('/welcome', [WelcomeController::class, 'index']); // Change route to avoid duplication
 
 // Authentication Routes
 Route::get('login', [AuthController::class, 'index'])->name('login');
@@ -86,3 +85,10 @@ Route::post('/logout', [App\Http\Controllers\Api\LogoutController::class, 'logou
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// API Level Routes
+Route::get('api/levels', [App\Http\Controllers\Api\LevelController::class, 'index']);
+Route::post('api/levels', [App\Http\Controllers\Api\LevelController::class, 'store']);
+Route::get('api/levels/{level}', [App\Http\Controllers\Api\LevelController::class, 'show']);
+Route::put('api/levels/{level}', [App\Http\Controllers\Api\LevelController::class, 'update']);
+Route::delete('api/levels/{level}', [App\Http\Controllers\Api\LevelController::class, 'destroy']);
