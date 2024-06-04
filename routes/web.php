@@ -1,94 +1,53 @@
 <?php
 use Illuminate\Http\Request;
-use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\LevelController;
-use App\Http\Controllers\POSController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ManagerController;
-use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Routing\Controller;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application.
-| These routes are loaded by the RouteServiceProvider and will be assigned to the "web" middleware group.
-| Make something great!
-|
-*/
+use App\Http\Controllers\Api\LevelController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\KategoriController;
+use App\Http\Controllers\Api\BarangController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// register
+Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
 
-// User Routes
-Route::prefix('user')->group(function () {
-    Route::get('/', [UserController::class, 'index'])->name('user.index');
-    Route::get('/create', [UserController::class, 'create'])->name('user.create');
-    Route::post('/', [UserController::class, 'store']);
-    Route::get('/{id}', [UserController::class, 'show']);
-    Route::get('/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
-    Route::put('/{id}', [UserController::class, 'update'])->name('user.update');
-    Route::delete('/{id}', [UserController::class, 'destroy'])->name('user.destroy');
-    Route::post('/list', [UserController::class, 'list']);
-});
+// login
+Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
 
-// Level Routes
-Route::prefix('level')->group(function () {
-    Route::get('/', [LevelController::class, 'index'])->name('level.index');
-    Route::get('/create', [LevelController::class, 'create'])->name('level.create');
-    Route::post('/', [LevelController::class, 'store']);
-    Route::get('/{id}/edit', [LevelController::class, 'edit'])->name('level.edit');
-    Route::put('/{id}', [LevelController::class, 'update'])->name('level.update');
-    Route::delete('/{id}', [LevelController::class, 'destroy'])->name('level.destroy');
-});
-
-// Kategori Routes
-Route::prefix('kategori')->group(function () {
-    Route::get('/', [KategoriController::class, 'index']);
-    Route::get('/create', [KategoriController::class, 'create'])->name('kategori.create');
-    Route::post('/', [KategoriController::class, 'store']);
-});
-
-// POS Routes
-Route::resource('m_user', POSController::class);
-
-// Welcome Routes
-Route::get('/welcome', [WelcomeController::class, 'index']); // Change route to avoid duplication
-
-// Authentication Routes
-Route::get('login', [AuthController::class, 'index'])->name('login');
-Route::get('register', [AuthController::class, 'register'])->name('register');
-Route::post('proses_login', [AuthController::class, 'proses_login'])->name('proses_login');
-Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-Route::post('proses_register', [AuthController::class, 'proses_register'])->name('proses_register');
-
-// Middleware Groups
-Route::group(['middleware' => ['auth']], function () {
-    Route::group(['middleware' => ['cek_login:1']], function () {
-        Route::resource('admin', AdminController::class);
-    });
-
-    Route::group(['middleware' => ['cek_login:2']], function () {
-        Route::resource('manager', ManagerController::class);
-    });
-});
-
-// API Routes
-Route::post('/register', [App\Http\Controllers\Api\RegisterController::class, 'register'])->name('api.register');
-Route::post('/login', [App\Http\Controllers\Api\LoginController::class, 'login'])->name('api.login');
-Route::post('/logout', [App\Http\Controllers\Api\LogoutController::class, 'logout'])->name('api.logout');
+// logout
+Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// API Level Routes
-Route::get('api/levels', [App\Http\Controllers\Api\LevelController::class, 'index']);
-Route::post('api/levels', [App\Http\Controllers\Api\LevelController::class, 'store']);
-Route::get('api/levels/{level}', [App\Http\Controllers\Api\LevelController::class, 'show']);
-Route::put('api/levels/{level}', [App\Http\Controllers\Api\LevelController::class, 'update']);
-Route::delete('api/levels/{level}', [App\Http\Controllers\Api\LevelController::class, 'destroy']);
+// CRUD LEVEL
+Route::get('levels', [LevelController::class, 'index']);
+Route::post('levels', [LevelController::class, 'store']);
+Route::get('levels/{level}', [LevelController::class, 'show']);
+Route::put('levels/{level}', [LevelController::class, 'update']);
+Route::delete('levels/{level}', [LevelController::class, 'destroy']);
+
+Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
+Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
+Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
+// CRUD USER
+Route::get('users', [UserController::class, 'index']);
+Route::post('users', [UserController::class, 'store']);
+Route::get('users/{user}', [UserController::class, 'show']);
+Route::put('users/{user}', [UserController::class, 'update']);
+Route::delete('users/{user}', [UserController::class, 'destroy']);
+
+// CRUD KATEGORI
+Route::get('kategori', [KategoriController::class, 'index']);
+Route::post('kategori', [KategoriController::class, 'store']);
+Route::get('kategori/{kategori}', [KategoriController::class, 'show']);
+Route::put('kategori/{kategori}', [KategoriController::class, 'update']);
+Route::delete('kategori/{kategori}', [KategoriController::class, 'destroy']);
+
+// CRUD BARANG
+Route::get('barang', [BarangController::class, 'index']);
+Route::post('barang', [BarangController::class, 'store']);
+Route::get('barang/{barang}', [BarangController::class, 'show']);
+Route::put('barang/{barang}', [BarangController::class, 'update']);
+Route::delete('barang/{barang}', [BarangController::class, 'destroy']);
