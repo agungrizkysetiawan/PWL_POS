@@ -1,31 +1,48 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Casts\Attribute; 
+
 
 class UserModel extends Authenticatable implements JWTSubject
 {
-    // Method to get the identifier for JWT
+
+    protected $table = 'm_user';
+    protected $primaryKey = 'user_id';
+
+   
+    protected $fillable = [
+        'level_id',
+        'username', 
+        'nama', 
+        'password',
+        'image'//Tambahan
+    ];
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
-
-    // Method to get custom claims for JWT
     public function getJWTCustomClaims()
     {
+
         return [];
     }
+    public function level() 
+    { 
+        return $this->belongsTo(LevelModel::class, 'level_id', 'level_id'); 
+    } 
 
-    // Table associated with the model
-    protected $table = 'm_user';
-
-    // Primary key associated with the table
-    protected $primaryKey = 'user_id';
-
-    // Attributes that are mass assignable
-    protected $fillable = ['level_id', 'username', 'nama', 'password'];
+    protected function image(): Attribute
+    {
+         return Attribute::make( 
+            get: fn ($image) => url('/storage/posts/' . $image), 
+        ); 
+    }
 }

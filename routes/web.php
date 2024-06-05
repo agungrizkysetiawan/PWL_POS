@@ -1,53 +1,138 @@
 <?php
-use Illuminate\Http\Request;
+
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\LevelController;
+use App\Http\Controllers\POSController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\LevelController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\KategoriController;
-use App\Http\Controllers\Api\BarangController;
+use Illuminate\Routing\Controller;
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
-// register
-Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
-
-// login
-Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
-
-// logout
-Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+Route::get('/', function () {
+    return view('welcome');
 });
 
-// CRUD LEVEL
-Route::get('levels', [LevelController::class, 'index']);
-Route::post('levels', [LevelController::class, 'store']);
-Route::get('levels/{level}', [LevelController::class, 'show']);
-Route::put('levels/{level}', [LevelController::class, 'update']);
-Route::delete('levels/{level}', [LevelController::class, 'destroy']);
+Route::get('/level',[LevelController::class,'index']);
+Route::get('/kategori',[KategoriController::class,'index']);
+Route::get('/user',[UserController::class,'index']);
+Route::get('/user/tambah',[UserController::class,'tambah'])->name('/user/tambah');
+Route::post('/user/tambah_simpan',[UserController::class,'tambah_simpan'])->name('/user/tambah_simpan');
+Route::get('/user/ubah/{id}',[UserController::class,'ubah'])->name('/user/ubah');
+Route::put('/user/ubah_simpan/{id}',[UserController::class,'ubah_simpan'])->name('/user/ubah_simpan');
+Route::get('/user/hapus/{id}',[UserController::class,'hapus'])->name('/user/hapus');
+Route::get('/level', [LevelController::class, 'index']);
+Route::get('/kategori', [KategoriController::class, 'index']);
+Route::get('/user', [UserController::class, 'index']);
+Route::get('/user/tambah', [UserController::class, 'tambah'])->name('/user/tambah');
+Route::post('/user/tambah_simpan', [UserController::class, 'tambah_simpan'])->name('/user/tambah_simpan');
+Route::get('/user/ubah/{id}', [UserController::class, 'ubah'])->name('/user/ubah');
+Route::put('/user/ubah_simpan/{id}', [UserController::class, 'ubah_simpan'])->name('/user/ubah_simpan');
+Route::get('/user/hapus/{id}', [UserController::class, 'hapus'])->name('/user/hapus');
 
-Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
-Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
-Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+
+//------------------------JB 6
+
+//Manage User
+Route::get('/user/create', [UserController::class, 'create'])->name('/user/create');
+Route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('/user/edit');
+Route::get('/user', [UserController :: class, 'index'])->name('user.index');
+Route::post('/user', [UserController :: class, 'store']);
+Route::put('/user/{id}', [UserController :: class, 'edit_simpan'])->name('/user/edit_simpan');
+Route::get('/user', [UserController::class, 'index'])->name('user.index');
+Route::post('/user', [UserController::class, 'store']);
+Route::put('/user/{id}', [UserController::class, 'edit_simpan'])->name('/user/edit_simpan');
+Route::get('/user/delete/{id}', [UserController::class, 'delete'])->name('/user/delete');
+
+//Manage Level
+Route::get('/level', [LevelController::class, 'index'])->name('level.index');
+Route::get('/level/create', [LevelController::class, 'create'])->name('/level/create');
+Route::post('/level', [LevelController::class, 'store']);
+Route::get('/level/edit/{id}', [LevelController::class, 'edit'])->name('/level/edit');
+Route::put('/level/{id)', [LevelController::class, 'edit_simpan'])->name('/level/edit_simpan');
+Route::get('/level', [LevelController::class, 'index'])->name('level.index');
+Route::get('/level/create', [LevelController::class, 'create'])->name('/level/create');
+Route::post('/level', [LevelController::class, 'store']);
+Route::get('/level/edit/{id}', [LevelController::class, 'edit'])->name('/level/edit');
+Route::put('/level/{id)', [LevelController::class, 'edit_simpan'])->name('/level/edit_simpan');
+Route::get('/level/delete/{id}', [LevelController::class, 'delete'])->name('/level/delete');
+
+Route::get('/kategori/create', [KategoriController::class, 'create'])->name('/kategori/create');
+Route::post('/kategori', [KategoriController :: class, 'store']);
+Route::post('/kategori', [KategoriController::class, 'store']);
+
+//JB 6 PRAK D
+Route::resource('m_user', POSController::class);
+//JB 7
+Route::get('/', [WelcomeController::class, 'index']);
+//JB 7 PRAK 3
+Route::get('/', [WelcomeController::class, 'index']);
+Route::group(['prefix' => 'user'], function () {
+    Route::get('/', [UserController::class, 'index']); // menampilkan halaman awal user
+    Route::post('/list', [UserController::class, 'list']); // menampilkan data user dalam bentuk json untuk datatables
+    Route::get('/create', [UserController::class, 'create']); // menampilkan halaman form tambah user
+    Route::post('/', [UserController::class, 'store']); // menyimpan data user baru
+    Route::get('/{id}', [UserController::class, 'show']); // menampilkan detail user
+//JB 7
+Route::get('/', [WelcomeController::class, 'index']);
+//JB 7 PRAK 3
+Route::get('/', [WelcomeController::class, 'index']);
+Route::group(['prefix' => 'user'], function () {
+    Route::get('/', [UserController::class, 'index']); // menampilkan halaman awal user
+    Route::post('/list', [UserController::class, 'list']); // menampilkan data user dalam bentuk json untuk datatables
+    Route::get('/create', [UserController::class, 'create']); // menampilkan halaman form tambah user
+    Route::post('/', [UserController::class, 'store']); // menyimpan data user baru
+    Route::get('/{id}', [UserController::class, 'show']); // menampilkan detail user
+    Route::get('/{id}/edit', [UserController::class, 'edit']); // menampilkan halaman form edit user
+    Route::put('/{id}', [UserController::class, 'update']); // menyimpan perubahan data user
+    Route::delete('/{id}', [UserController::class, 'destroy']); // menghapus data user
+
+
 });
-// CRUD USER
-Route::get('users', [UserController::class, 'index']);
-Route::post('users', [UserController::class, 'store']);
-Route::get('users/{user}', [UserController::class, 'show']);
-Route::put('users/{user}', [UserController::class, 'update']);
-Route::delete('users/{user}', [UserController::class, 'destroy']);
 
-// CRUD KATEGORI
-Route::get('kategori', [KategoriController::class, 'index']);
-Route::post('kategori', [KategoriController::class, 'store']);
-Route::get('kategori/{kategori}', [KategoriController::class, 'show']);
-Route::put('kategori/{kategori}', [KategoriController::class, 'update']);
-Route::delete('kategori/{kategori}', [KategoriController::class, 'destroy']);
 
-// CRUD BARANG
-Route::get('barang', [BarangController::class, 'index']);
-Route::post('barang', [BarangController::class, 'store']);
-Route::get('barang/{barang}', [BarangController::class, 'show']);
-Route::put('barang/{barang}', [BarangController::class, 'update']);
-Route::delete('barang/{barang}', [BarangController::class, 'destroy']);
+
+
+//------------------------JB 8-----------------------------//
+Route::get('login', [AuthController::class, 'index'])->name('login');
+Route::get('register', [AuthController::class, 'register'])->name('register');
+Route::post('proses_login', [AuthController::class, 'proses_login'])->name('proses_login');
+Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('proses_register', [AuthController::class, 'proses_register'])->name('proses_register');
+
+// Set up middleware using groups in routing
+// Inside, there are groups to check the login condition
+// If the logged-in user is an admin, they will be directed to AdminController
+// If the logged-in user is a manager, they will be directed to UserController
+Route::group(['middleware' => ['auth']], function () {
+    Route::group(['middleware' => ['cek_login:1']], function () {
+        Route::resource('admin', AdminController::class);
+    });
+
+    Route::group(['middleware' => ['cek_login:2']], function () {
+        Route::resource('manager', ManagerController::class);
+    });
+});
+});
